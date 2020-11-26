@@ -1,27 +1,38 @@
-# Trymsw
+# MSW with Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.1.
+1. yarn or npm to install msw for dev.
 
-## Development server
+2. Use `npx msw init src` to add mockServiceWorker.js in ther **src** folder
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+3. Create `handler.js` to implement response code.
 
-## Code scaffolding
+```javascript
+import { rest } from "msw";
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+export const handlers = [
+  rest.post("/login", null),
+  rest.get("/user", (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ name: "clover" }));
+  }),
+];
+```
 
-## Build
+4. Create `browser.js` to use **setupWorker** to desconstructure handler functions.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```javascript
+import { handlers } from "./handler";
+import { setupWorker } from "msw";
 
-## Running unit tests
+export const worker = setupWorker(...handlers);
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+5. Add `src/mockServiceWorker.js` in the **architect ➡ build ➡ options ➡ assets** to create worker by angular.
 
-## Running end-to-end tests
+6. import worker and start the work in the `environments/environment.ts`.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```javascript
+import { worker } from "../app/browser";
+worker.start();
+```
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Now we can write the http call service to use mws.
