@@ -11,7 +11,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  Doget(): void {
-    this.rest.getMockApiData().subscribe((res) => console.log(res));
+  DoGetMSW(id?: number): void {
+    this.rest.getMockApiData(id).subscribe((res) => console.log(res));
+  }
+
+  DoGetRXJS(id?: number): void {
+    this.rest.mockRXJSAPI(id).subscribe((res) => console.log(res));
   }
 }
